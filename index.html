@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        /* Login Page Styles */
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+        
+        .hospital-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .hospital-logo i {
+            color: var(--primary-color);
+            font-size: 3.5rem;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+        
+        .create-account {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .create-account a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        /* Dashboard Styles */
+        #dashboard {
+            display: none;
+        }
+        
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: var(--primary-color);
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .stat-card {
+            border-radius: 10px;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            opacity: 0.7;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="container">
+        <div class="login-container">
+            <div class="hospital-logo">
+                <i class="fas fa-hospital"></i>
+                <h2 class="mt-3">Hospital Management</h2>
+            </div>
+            
+            <div class="card">
+                <div class="card-body p-4">
+                    <!-- Login Form -->
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                    
+                    <div class="create-account mt-3">
+                        <p>Don't have an account? <a href="#" id="show-register">Create one</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div class="card mt-4" id="register-card" style="display: none;">
+                <div class="card-body p-4">
+                    <h5 class="card-title text-center mb-4">Create New Account</h5>
+                    <form id="register-form">
+                        <div class="mb-3">
+                            <label for="reg-username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="reg-username" placeholder="Choose a username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reg-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="reg-password" placeholder="Create a password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reg-confirm-password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="reg-confirm-password" placeholder="Confirm your password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reg-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="reg-email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reg-role" class="form-label">Role</label>
+                            <select class="form-select" id="reg-role" required>
+                                <option value="">Select your role</option>
+                                <option value="admin">Administrator</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="nurse">Nurse</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                    </form>
+                    
+                    <div class="create-account mt-3">
+                        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="text-center mb-4">
+                <i class="fas fa-hospital fa-3x mb-3"></i>
+                <h4>HOSPI</h4>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="overview">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="rooms">
+                        <i class="fas fa-procedures"></i> Rooms
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="patients">
+                        <i class="fas fa-user-injured"></i> Patients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="staff">
+                        <i class="fas fa-user-md"></i> Staff
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="reports">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4">
+                <div class="container-fluid">
+                    <span class="navbar-brand">Dashboard</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">Welcome, <strong id="current-username"></strong></span>
+                        <button id="logout-btn" class="btn btn-outline-danger">Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Overview Section -->
+            <section id="overview-section" class="content-section active">
+                <h4 class="mb-4">Hospital Overview</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card bg-primary">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Total Rooms</h5>
+                                    <h2 id="total-rooms">0</h2>
+                                </div>
+                                <i class="fas fa-procedures"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-success">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Patients</h5>
+                                    <h2 id="total-patients">0</h2>
+                                </div>
+                                <i class="fas fa-user-injured"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-warning">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Doctors</h5>
+                                    <h2 id="total-doctors">0</h2>
+                                </div>
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-danger">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Nurses</h5>
+                                    <h2 id="total-nurses">0</h2>
+                                </div>
+                                <i class="fas fa-user-nurse"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Room Occupancy</h5>
+                <button id="refresh-room-btn" class="btn btn-sm btn-primary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+  
+                <canvas id="room-occupancy-chart" height="250"></canvas>
+                                <div class="text-muted small text-end mt-2">
+                   <span id="room-chart-update-time">Never</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Patient Severity</h5>
+                <button id="refresh-severity-btn" class="btn btn-sm btn-primary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <canvas id="room-occupancy-chart" height="250"></canvas>
+                               <div class="text-muted small text-end mt-2">
+                     <span id="severity-chart-update-time">Never</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                
+            </section>
+
+            <!-- Rooms Section -->
+            <section id="rooms-section" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Room Management</h4>
+                    <button id="add-room-btn" class="btn btn-primary">Add New Room</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select id="room-type-filter" class="form-select">
+                                    <option value="">All Types</option>
+                                    <option value="general">General</option>
+                                    <option value="icu">ICU</option>
+                                    <option value="isolation">Isolation</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="room-status-filter" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="available">Available</option>
+                                    <option value="occupied">Occupied</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button id="filter-rooms-btn" class="btn btn-secondary w-100">Filter</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table id="rooms-table" class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Room Number</th>
+                                        <th>Type</th>
+                                        <th>Capacity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rooms will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patients Section -->
+            <section id="patients-section" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Patient Management</h4>
+                    <button id="add-patient-btn" class="btn btn-primary">Add New Patient</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" id="patient-search" class="form-control" placeholder="Search patients...">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="patient-severity-filter" class="form-select">
+                                    <option value="">All Severities</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="filter-patients-btn" class="btn btn-secondary w-100">Filter</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table id="patients-table" class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Severity</th>
+                                        <th>Room</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Patients will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Staff Section -->
+            <section id="staff-section" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Staff Management</h4>
+                    <button id="add-staff-btn" class="btn btn-primary">Add New Staff</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" id="staff-search" class="form-control" placeholder="Search staff...">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="staff-role-filter" class="form-select">
+                                    <option value="">All Roles</option>
+                                    <option value="doctor">Doctors</option>
+                                    <option value="nurse">Nurses</option>
+                                    <option value="admin">Administrators</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="filter-staff-btn" class="btn btn-secondary w-100">Filter</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table id="staff-table" class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Email</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Staff will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="content-section">
+                <h4 class="mb-4">Reports</h4>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label for="report-type" class="form-label">Report Type:</label>
+                                <select id="report-type" class="form-select">
+                                    <option value="occupancy">Room Occupancy</option>
+                                    <option value="admissions">Patient Admissions</option>
+                                    <option value="staff">Staff Distribution</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="report-period" class="form-label">Time Period:</label>
+                                <select id="report-period" class="form-select">
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button id="generate-report-btn" class="btn btn-primary w-100">Generate Report</button>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <canvas id="report-chart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="content-section">
+                <h4 class="mb-4">Settings</h4>
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">Profile</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab">Password</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">System</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="settingsTabsContent">
+                            <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                                <form id="profile-form">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="profile-fullname" class="form-label">Full Name</label>
+                                            <input type="text" class="form-control" id="profile-fullname" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="profile-email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="profile-email" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="profile-role" class="form-label">Role</label>
+                                            <input type="text" class="form-control" id="profile-role" disabled>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="profile-username" class="form-label">Username</label>
+                                            <input type="text" class="form-control" id="profile-username" disabled>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                                </form>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="password" role="tabpanel">
+                                <form id="password-form">
+                                    <div class="mb-3">
+                                        <label for="current-password" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="current-password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="new-password" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="new-password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirm-password" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirm-password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Change Password</button>
+                                </form>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="system" role="tabpanel">
+                                <form id="system-settings-form">
+                                    <div class="mb-3">
+                                        <label for="hospital-name" class="form-label">Hospital Name</label>
+                                        <input type="text" class="form-control" id="hospital-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="hospital-address" class="form-label">Hospital Address</label>
+                                        <textarea class="form-control" id="hospital-address" rows="3" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="hospital-phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="hospital-phone" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Room Modal -->
+    <div class="modal fade" id="room-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="room-modal-title">Add New Room</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="room-form">
+                        <input type="hidden" id="room-id">
+                        <div class="mb-3">
+                            <label class="form-label">Room Number</label>
+                            <input type="text" class="form-control" id="room-number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Room Type</label>
+                            <select class="form-select" id="room-type" required>
+                                <option value="general" selected>General</option>
+                                <option value="icu">ICU</option>
+                                <option value="isolation">Isolation</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="room-capacity" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="room-status" required>
+                                <option value="available" selected>Available</option>
+                                <option value="occupied">Occupied</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="room-form" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Modal -->
+    <div class="modal fade" id="patient-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="patient-modal-title">Add New Patient</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="patient-form">
+                        <input type="hidden" id="patient-id">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="patient-firstname" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="patient-lastname" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="patient-dob" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" id="patient-gender" required>
+                                <option value="male" selected>Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Blood Type</label>
+                            <select class="form-select" id="patient-blood-type" required>
+                                <option value="A+" selected>A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Severity</label>
+                            <select class="form-select" id="patient-severity" required>
+                                <option value="low" selected>Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Assign to Room</label>
+                            <select class="form-select" id="patient-room">
+                                <option value="" selected>Select a room...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="patient-isolated">
+                                <label class="form-check-label">Isolated Patient</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="patient-contagious">
+                                <label class="form-check-label">Contagious Disease</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="patient-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="patient-form" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Modal -->
+    <div class="modal fade" id="staff-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staff-modal-title">Add New Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="staff-form">
+                        <input type="hidden" id="staff-id">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="staff-fullname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="staff-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="staff-username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="staff-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" id="staff-role" required>
+                                <option value="doctor">Doctor</option>
+                                <option value="nurse">Nurse</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="staff-form" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirm-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-modal-title">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-modal-message">Are you sure you want to perform this action?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirm-action">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+<script>
+        // Chart instances
+let roomOccupancyChart, severityChart;
+
+// DOM Ready - Single optimized event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Initialize charts
+    initCharts();  
+
+    // 2. Setup UI controls including refresh buttons
+    setupRefreshButtons();
+    setupChartRefreshHandlers();
+
+    // 3. Auto-refresh data every 30 seconds (modified)
+    setInterval(() => {
+        // Refresh both charts
+        refreshRoomChart();
+        refreshSeverityChart();
+        updateChartTimestamps(); // Update timestamps after refresh
+    }, 30000);  
+
+    // 4. Initialize demo data if empty
+    if (!localStorage.getItem('hospital_data')) {
+        localStorage.setItem('hospital_data', JSON.stringify(demoData));
+    }
+
+    // 5. Check login state
+    const currentUser = JSON.parse(localStorage.getItem('current_user'));
+    if (currentUser) {
+        showDashboard(currentUser);
+        // Initialize charts with data and timestamps
+        refreshRoomChart();
+        refreshSeverityChart();
+        updateChartTimestamps();
+    }
+});
+
+// Add these new functions to your code:
+function refreshRoomChart() {
+    const hospitalData = JSON.parse(localStorage.getItem('hospital_data')) || demoData;
+    const roomData = {
+        occupied: hospitalData.rooms.filter(r => r.status === 'occupied').length,
+        available: hospitalData.rooms.filter(r => r.status === 'available').length,
+        maintenance: hospitalData.rooms.filter(r => r.status === 'maintenance').length
+    };
+    
+    roomOccupancyChart.data.datasets[0].data = [
+        roomData.occupied,
+        roomData.available,
+        roomData.maintenance
+    ];
+    roomOccupancyChart.update();
+}
+
+function refreshSeverityChart() {
+    const hospitalData = JSON.parse(localStorage.getItem('hospital_data')) || demoData;
+    const severityData = [
+        hospitalData.patients.filter(p => p.severity === 'low').length,
+        hospitalData.patients.filter(p => p.severity === 'medium').length,
+        hospitalData.patients.filter(p => p.severity === 'high').length,
+        hospitalData.patients.filter(p => p.severity === 'critical').length
+    ];
+    
+    severityChart.data.datasets[0].data = severityData;
+    severityChart.update();
+}
+
+function updateChartTimestamps() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const roomTimeElement = document.getElementById('room-chart-update-time');
+    const severityTimeElement = document.getElementById('severity-chart-update-time');
+    
+    if (roomTimeElement) roomTimeElement.textContent = timeString;
+    if (severityTimeElement) severityTimeElement.textContent = timeString;
+}
+
+// Modify your existing setupChartRefreshHandlers to include timestamps:
+function setupChartRefreshHandlers() {
+    // Room chart refresh
+    document.getElementById('refresh-room-btn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.disabled = true;
+        const icon = btn.querySelector('i');
+        const originalIconClass = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        
+        try {
+            await refreshRoomChart();
+            updateChartTimestamps();
+        } finally {
+            btn.disabled = false;
+            icon.className = originalIconClass;
+        }
+    });
+
+    // Severity chart refresh
+    document.getElementById('refresh-severity-btn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.disabled = true;
+        const icon = btn.querySelector('i');
+        const originalIconClass = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        
+        try {
+            await refreshSeverityChart();
+            updateChartTimestamps();
+        } finally {
+            btn.disabled = false;
+            icon.className = originalIconClass;
+        }
+    });
+}
+
+// NEW FUNCTION: Add this right after DOMContentLoaded
+function setupChartRefreshHandlers() {
+    // Room chart refresh
+    document.getElementById('refresh-room-btn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+        await loadChartData();
+        btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        btn.disabled = false;
+    });
+
+    // Severity chart refresh
+    document.getElementById('refresh-severity-btn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+        await loadChartData();
+        btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        btn.disabled = false;
+    });
+}
+
+
+
+function initCharts() {
+    // Room Occupancy Chart
+    const roomCtx = document.getElementById('room-occupancy-chart');
+    roomOccupancyChart = new Chart(roomCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Occupied', 'Available', 'Maintenance'],
+            datasets: [{
+                data: [0, 0, 0], // Initial empty data
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 205, 86, 0.8)'
+                ]
+            }]
+        }
+    });
+
+    // Patient Severity Chart
+    const severityCtx = document.getElementById('severity-chart');
+    severityChart = new Chart(severityCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Low', 'Medium', 'High', 'Critical'],
+            datasets: [{
+                label: 'Patients',
+                data: [0, 0, 0, 0], // Initial empty data
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(231, 76, 60, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function setupRefreshButtons() {
+    // Room chart refresh
+    document.getElementById('refresh-room-btn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.disabled = true;
+        const icon = btn.querySelector('i');
+        const originalIconClass = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        
+        try {
+            // Your existing refresh logic for room chart
+            const newData = {
+                occupied: Math.floor(Math.random() * 100),
+                available: Math.floor(Math.random() * 100),
+                maintenance: Math.floor(Math.random() * 20)
+            };
+            
+            roomOccupancyChart.data.datasets[0].data = [
+                newData.occupied,
+                newData.available,
+                newData.maintenance
+            ];
+            roomOccupancyChart.update();
+            
+            updateChartTimestamps(); // Update timestamps
+        } finally {
+            btn.disabled = false;
+            icon.className = originalIconClass;
+        }
+    });
+
+    // Severity chart refresh
+    document.getElementById('refresh-severity-btn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.disabled = true;
+        const icon = btn.querySelector('i');
+        const originalIconClass = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        
+        try {
+            // Your existing refresh logic for severity chart
+            const newData = [
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 80),
+                Math.floor(Math.random() * 50),
+                Math.floor(Math.random() * 30)
+            ];
+            
+            severityChart.data.datasets[0].data = newData;
+            severityChart.update();
+            
+            updateChartTimestamps(); // Update timestamps
+        } finally {
+            btn.disabled = false;
+            icon.className = originalIconClass;
+        }
+    });
+}
+        // Demo data storage
+        const demoData = {
+            rooms: [
+                { id: 1, number: '101', type: 'general', capacity: 2, status: 'available' },
+                { id: 2, number: '102', type: 'general', capacity: 2, status: 'available' },
+                { id: 3, number: '201', type: 'icu', capacity: 1, status: 'occupied' },
+                { id: 4, number: '301', type: 'isolation', capacity: 1, status: 'available' }
+            ],
+            patients: [
+                { 
+                    id: 1, 
+                    first_name: 'John', 
+                    last_name: 'Doe', 
+                    dob: '1980-05-15', 
+                    gender: 'male', 
+                    blood_type: 'A+', 
+                    severity: 'medium', 
+                    room_id: 3, 
+                    is_isolated: false, 
+                    is_contagious: false,
+                    notes: 'Regular checkup required'
+                }
+            ],
+            staff: [
+                { 
+                    id: 1, 
+                    full_name: 'Dr. Sarah Smith', 
+                    email: 'sarah.smith@hospital.com', 
+                    username: 'dr.sarah', 
+                    password: 'password123', 
+                    role: 'doctor' 
+                },
+                { 
+                    id: 2, 
+                    full_name: 'Nurse Jane Doe', 
+                    email: 'jane.doe@hospital.com', 
+                    username: 'nurse.jane', 
+                    password: 'password123', 
+                    role: 'nurse' 
+                },
+                { 
+                    id: 3, 
+                    full_name: 'Admin User', 
+                    email: 'admin@hospital.com', 
+                    username: 'admin', 
+                    password: 'admin123', 
+                    role: 'admin' 
+                }
+            ],
+            currentUser: null
+        };
+
+
+        // Toggle between login and registration forms
+        document.getElementById('show-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-form').closest('.card').style.display = 'none';
+            document.getElementById('register-card').style.display = 'block';
+        });
+        
+        document.getElementById('show-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('register-card').style.display = 'none';
+            document.getElementById('login-form').closest('.card').style.display = 'block';
+        });
+
+        // Handle registration form submission
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const email = document.getElementById('reg-email').value;
+            const role = document.getElementById('reg-role').value;
+            
+            // Validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (!role) {
+                alert('Please select a role!');
+                return;
+            }
+            
+            // Check if username already exists
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const existingUser = hospitalData.staff.find(staff => staff.username === username);
+            
+            if (existingUser) {
+                alert('Username already exists!');
+                return;
+            }
+            
+            // Create new staff member
+            const newStaff = {
+                id: hospitalData.staff.length + 1,
+                full_name: username,
+                email,
+                username,
+                password,
+                role
+            };
+            
+            // Add to staff and save
+            hospitalData.staff.push(newStaff);
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            alert('Account created successfully! You can now login.');
+            
+            // Switch back to login form
+            document.getElementById('register-card').style.display = 'none';
+            document.getElementById('login-form').closest('.card').style.display = 'block';
+            
+            // Clear form
+            document.getElementById('register-form').reset();
+        });
+
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Get hospital data
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            // Find user
+            const user = hospitalData.staff.find(staff => 
+                staff.username === username && staff.password === password
+            );
+            
+            if (!user) {
+                alert('Invalid username or password!');
+                return;
+            }
+            
+            // Set current user
+            localStorage.setItem('current_user', JSON.stringify(user));
+            
+            // Show dashboard
+            showDashboard(user);
+        });
+
+        // Logout button
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('current_user');
+            location.reload();
+        });
+
+        // Navigation between sections
+        document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = this.getAttribute('data-section');
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(navLink => {
+                    navLink.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Update active section
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(`${sectionId}-section`).classList.add('active');
+                
+                // Update dashboard title
+                document.querySelector('.navbar-brand').textContent = this.textContent.trim();
+                
+                // Load section data if needed
+                switch(sectionId) {
+                    case 'rooms':
+                        loadRooms();
+                        break;
+                    case 'patients':
+                        loadPatients();
+                        break;
+                    case 'staff':
+                        loadStaff();
+                        break;
+                    case 'reports':
+                        generateReport();
+                        break;
+                    case 'settings':
+                        loadProfile();
+                        break;
+                }
+            });
+        });
+
+        // Add Room button
+        document.getElementById('add-room-btn').addEventListener('click', function() {
+            document.getElementById('room-modal-title').textContent = 'Add New Room';
+            document.getElementById('room-form').reset();
+            document.getElementById('room-id').value = '';
+            
+            const roomModal = new bootstrap.Modal(document.getElementById('room-modal'));
+            roomModal.show();
+        });
+
+        // Room form submission
+        document.getElementById('room-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const roomData = {
+                number: document.getElementById('room-number').value,
+                type: document.getElementById('room-type').value,
+                capacity: document.getElementById('room-capacity').value,
+                status: document.getElementById('room-status').value
+            };
+            
+            const roomId = document.getElementById('room-id').value;
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            if (roomId) {
+                // Update existing room
+                const roomIndex = hospitalData.rooms.findIndex(room => room.id == roomId);
+                if (roomIndex !== -1) {
+                    hospitalData.rooms[roomIndex] = { ...hospitalData.rooms[roomIndex], ...roomData };
+                }
+            } else {
+                // Add new room
+                const newRoom = {
+                    id: hospitalData.rooms.length + 1,
+                    ...roomData
+                };
+                hospitalData.rooms.push(newRoom);
+            }
+            
+            // Save data
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            // Close modal and refresh rooms
+            bootstrap.Modal.getInstance(document.getElementById('room-modal')).hide();
+            loadRooms();
+        });
+
+        // Add Patient button
+        document.getElementById('add-patient-btn').addEventListener('click', function() {
+            document.getElementById('patient-modal-title').textContent = 'Add New Patient';
+            document.getElementById('patient-form').reset();
+            document.getElementById('patient-id').value = '';
+            
+            // Load available rooms
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const roomSelect = document.getElementById('patient-room');
+            roomSelect.innerHTML = '<option value="" selected>Select a room...</option>';
+            
+            hospitalData.rooms
+                .filter(room => room.status === 'available')
+                .forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room.id;
+                    option.textContent = `${room.number} (${room.type})`;
+                    roomSelect.appendChild(option);
+                });
+            
+            const patientModal = new bootstrap.Modal(document.getElementById('patient-modal'));
+            patientModal.show();
+        });
+
+        // Patient form submission
+        document.getElementById('patient-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const patientData = {
+                first_name: document.getElementById('patient-firstname').value,
+                last_name: document.getElementById('patient-lastname').value,
+                dob: document.getElementById('patient-dob').value,
+                gender: document.getElementById('patient-gender').value,
+                blood_type: document.getElementById('patient-blood-type').value,
+                severity: document.getElementById('patient-severity').value,
+                room_id: document.getElementById('patient-room').value || null,
+                is_isolated: document.getElementById('patient-isolated').checked,
+                is_contagious: document.getElementById('patient-contagious').checked,
+                notes: document.getElementById('patient-notes').value
+            };
+            
+            const patientId = document.getElementById('patient-id').value;
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            if (patientId) {
+                // Update existing patient
+                const patientIndex = hospitalData.patients.findIndex(patient => patient.id == patientId);
+                if (patientIndex !== -1) {
+                    hospitalData.patients[patientIndex] = { ...hospitalData.patients[patientIndex], ...patientData };
+                }
+            } else {
+                // Add new patient
+                const newPatient = {
+                    id: hospitalData.patients.length + 1,
+                    ...patientData
+                };
+                hospitalData.patients.push(newPatient);
+                
+                // Update room status if assigned
+                if (patientData.room_id) {
+                    const roomIndex = hospitalData.rooms.findIndex(room => room.id == patientData.room_id);
+                    if (roomIndex !== -1) {
+                        hospitalData.rooms[roomIndex].status = 'occupied';
+                    }
+                }
+            }
+            
+            // Save data
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            // Close modal and refresh patients
+            bootstrap.Modal.getInstance(document.getElementById('patient-modal')).hide();
+            loadPatients();
+        });
+
+        // Add Staff button
+        document.getElementById('add-staff-btn').addEventListener('click', function() {
+            document.getElementById('staff-modal-title').textContent = 'Add New Staff Member';
+            document.getElementById('staff-form').reset();
+            document.getElementById('staff-id').value = '';
+            
+            const staffModal = new bootstrap.Modal(document.getElementById('staff-modal'));
+            staffModal.show();
+        });
+
+        // Staff form submission
+        document.getElementById('staff-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const staffData = {
+                full_name: document.getElementById('staff-fullname').value,
+                email: document.getElementById('staff-email').value,
+                username: document.getElementById('staff-username').value,
+                password: document.getElementById('staff-password').value,
+                role: document.getElementById('staff-role').value
+            };
+            
+            const staffId = document.getElementById('staff-id').value;
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            if (staffId) {
+                // Update existing staff
+                const staffIndex = hospitalData.staff.findIndex(staff => staff.id == staffId);
+                if (staffIndex !== -1) {
+                    hospitalData.staff[staffIndex] = { ...hospitalData.staff[staffIndex], ...staffData };
+                }
+            } else {
+                // Add new staff
+                const newStaff = {
+                    id: hospitalData.staff.length + 1,
+                    ...staffData
+                };
+                hospitalData.staff.push(newStaff);
+            }
+            
+            // Save data
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            // Close modal and refresh staff
+            bootstrap.Modal.getInstance(document.getElementById('staff-modal')).hide();
+            loadStaff();
+        });
+
+        // Generate Report button
+        document.getElementById('generate-report-btn').addEventListener('click', function() {
+            generateReport();
+        });
+
+        // Profile form submission
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentUser = JSON.parse(localStorage.getItem('current_user'));
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            const updatedData = {
+                full_name: document.getElementById('profile-fullname').value,
+                email: document.getElementById('profile-email').value
+            };
+            
+            // Update in staff data
+            const staffIndex = hospitalData.staff.findIndex(staff => staff.id === currentUser.id);
+            if (staffIndex !== -1) {
+                hospitalData.staff[staffIndex] = { ...hospitalData.staff[staffIndex], ...updatedData };
+            }
+            
+            // Update current user
+            const updatedUser = { ...currentUser, ...updatedData };
+            localStorage.setItem('current_user', JSON.stringify(updatedUser));
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            alert('Profile updated successfully!');
+            loadProfile();
+        });
+
+        // Password form submission
+        document.getElementById('password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+            
+            const currentUser = JSON.parse(localStorage.getItem('current_user'));
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            // Verify current password
+            if (currentUser.password !== currentPassword) {
+                alert('Current password is incorrect!');
+                return;
+            }
+            
+            // Update password in staff data
+            const staffIndex = hospitalData.staff.findIndex(staff => staff.id === currentUser.id);
+            if (staffIndex !== -1) {
+                hospitalData.staff[staffIndex].password = newPassword;
+            }
+            
+            // Update current user
+            currentUser.password = newPassword;
+            localStorage.setItem('current_user', JSON.stringify(currentUser));
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            alert('Password changed successfully!');
+            document.getElementById('password-form').reset();
+        });
+
+        // System settings form submission
+        document.getElementById('system-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real app, this would save to server
+            alert('System settings saved!');
+        });
+
+        // Helper Functions
+        function showDashboard(user) {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('current-username').textContent = user.username;
+            
+            // Load overview data
+            updateOverviewStats();
+        }
+
+        function updateOverviewStats() {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            document.getElementById('total-rooms').textContent = hospitalData.rooms.length;
+            document.getElementById('total-patients').textContent = hospitalData.patients.length;
+            document.getElementById('total-doctors').textContent = 
+                hospitalData.staff.filter(staff => staff.role === 'doctor').length;
+            document.getElementById('total-nurses').textContent = 
+                hospitalData.staff.filter(staff => staff.role === 'nurse').length;
+        }
+
+        function loadRooms() {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const roomsTable = document.getElementById('rooms-table').querySelector('tbody');
+            roomsTable.innerHTML = '';
+            
+            hospitalData.rooms.forEach(room => {
+                const row = document.createElement('tr');
+                
+                // Get patients in this room
+                const patientsInRoom = hospitalData.patients.filter(patient => patient.room_id == room.id);
+                
+                row.innerHTML = `
+                    <td>${room.number}</td>
+                    <td>${room.type.charAt(0).toUpperCase() + room.type.slice(1)}</td>
+                    <td>${room.capacity}</td>
+                    <td>
+                        <span class="badge ${room.status === 'available' ? 'bg-success' : 'bg-warning'}">
+                            ${room.status.charAt(0).toUpperCase() + room.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-room" data-id="${room.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-room" data-id="${room.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                roomsTable.appendChild(row);
+            });
+            
+            // Add event listeners to edit/delete buttons
+            document.querySelectorAll('.edit-room').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roomId = this.getAttribute('data-id');
+                    editRoom(roomId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-room').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roomId = this.getAttribute('data-id');
+                    confirmDelete('room', roomId);
+                });
+            });
+        }
+
+        function loadPatients() {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const patientsTable = document.getElementById('patients-table').querySelector('tbody');
+            patientsTable.innerHTML = '';
+            
+            hospitalData.patients.forEach(patient => {
+                // Calculate age from DOB
+                const dob = new Date(patient.dob);
+                const age = new Date().getFullYear() - dob.getFullYear();
+                
+                // Get assigned room
+                const room = hospitalData.rooms.find(r => r.id == patient.room_id);
+                const roomInfo = room ? `${room.number} (${room.type})` : 'Not assigned';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${patient.id}</td>
+                    <td>${patient.first_name} ${patient.last_name}</td>
+                    <td>${age}</td>
+                    <td>
+                        <span class="badge ${getSeverityBadgeClass(patient.severity)}">
+                            ${patient.severity.charAt(0).toUpperCase() + patient.severity.slice(1)}
+                        </span>
+                    </td>
+                    <td>${roomInfo}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-patient" data-id="${patient.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-patient" data-id="${patient.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                patientsTable.appendChild(row);
+            });
+            
+            // Add event listeners to edit/delete buttons
+            document.querySelectorAll('.edit-patient').forEach(button => {
+                button.addEventListener('click', function() {
+                    const patientId = this.getAttribute('data-id');
+                    editPatient(patientId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-patient').forEach(button => {
+                button.addEventListener('click', function() {
+                    const patientId = this.getAttribute('data-id');
+                    confirmDelete('patient', patientId);
+                });
+            });
+        }
+
+        function loadStaff() {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const staffTable = document.getElementById('staff-table').querySelector('tbody');
+            staffTable.innerHTML = '';
+            
+            hospitalData.staff.forEach(staff => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${staff.full_name}</td>
+                    <td>${staff.role.charAt(0).toUpperCase() + staff.role.slice(1)}</td>
+                    <td>${staff.email}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-staff" data-id="${staff.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-staff" data-id="${staff.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                staffTable.appendChild(row);
+            });
+            
+            // Add event listeners to edit/delete buttons
+            document.querySelectorAll('.edit-staff').forEach(button => {
+                button.addEventListener('click', function() {
+                    const staffId = this.getAttribute('data-id');
+                    editStaff(staffId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-staff').forEach(button => {
+                button.addEventListener('click', function() {
+                    const staffId = this.getAttribute('data-id');
+                    confirmDelete('staff', staffId);
+                });
+            });
+        }
+
+        function loadProfile() {
+            const currentUser = JSON.parse(localStorage.getItem('current_user'));
+            
+            document.getElementById('profile-fullname').value = currentUser.full_name || '';
+            document.getElementById('profile-email').value = currentUser.email || '';
+            document.getElementById('profile-role').value = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            document.getElementById('profile-username').value = currentUser.username;
+        }
+
+        function editRoom(roomId) {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const room = hospitalData.rooms.find(r => r.id == roomId);
+            
+            if (room) {
+                document.getElementById('room-modal-title').textContent = 'Edit Room';
+                document.getElementById('room-id').value = room.id;
+                document.getElementById('room-number').value = room.number;
+                document.getElementById('room-type').value = room.type;
+                document.getElementById('room-capacity').value = room.capacity;
+                document.getElementById('room-status').value = room.status;
+                
+                const roomModal = new bootstrap.Modal(document.getElementById('room-modal'));
+                roomModal.show();
+            }
+        }
+
+        function editPatient(patientId) {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const patient = hospitalData.patients.find(p => p.id == patientId);
+            
+            if (patient) {
+                document.getElementById('patient-modal-title').textContent = 'Edit Patient';
+                document.getElementById('patient-id').value = patient.id;
+                document.getElementById('patient-firstname').value = patient.first_name;
+                document.getElementById('patient-lastname').value = patient.last_name;
+                document.getElementById('patient-dob').value = patient.dob;
+                document.getElementById('patient-gender').value = patient.gender;
+                document.getElementById('patient-blood-type').value = patient.blood_type;
+                document.getElementById('patient-severity').value = patient.severity;
+                document.getElementById('patient-isolated').checked = patient.is_isolated;
+                document.getElementById('patient-contagious').checked = patient.is_contagious;
+                document.getElementById('patient-notes').value = patient.notes || '';
+                
+                // Load available rooms
+                const roomSelect = document.getElementById('patient-room');
+                roomSelect.innerHTML = '<option value="">Select a room...</option>';
+                
+                hospitalData.rooms.forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room.id;
+                    option.textContent = `${room.number} (${room.type})`;
+                    option.selected = room.id == patient.room_id;
+                    roomSelect.appendChild(option);
+                });
+                
+                const patientModal = new bootstrap.Modal(document.getElementById('patient-modal'));
+                patientModal.show();
+            }
+        }
+
+        function editStaff(staffId) {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const staff = hospitalData.staff.find(s => s.id == staffId);
+            
+            if (staff) {
+                document.getElementById('staff-modal-title').textContent = 'Edit Staff Member';
+                document.getElementById('staff-id').value = staff.id;
+                document.getElementById('staff-fullname').value = staff.full_name;
+                document.getElementById('staff-email').value = staff.email;
+                document.getElementById('staff-username').value = staff.username;
+                document.getElementById('staff-password').value = staff.password;
+                document.getElementById('staff-role').value = staff.role;
+                
+                const staffModal = new bootstrap.Modal(document.getElementById('staff-modal'));
+                staffModal.show();
+            }
+        }
+
+        function confirmDelete(type, id) {
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirm-modal'));
+            
+            document.getElementById('confirm-modal-title').textContent = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            document.getElementById('confirm-modal-message').textContent = `Are you sure you want to delete this ${type}?`;
+            
+            document.getElementById('confirm-action').onclick = function() {
+                deleteItem(type, id);
+                confirmModal.hide();
+            };
+            
+            confirmModal.show();
+        }
+
+        function deleteItem(type, id) {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            
+            switch(type) {
+                case 'room':
+                    // Check if room has patients
+                    const patientsInRoom = hospitalData.patients.filter(patient => patient.room_id == id);
+                    if (patientsInRoom.length > 0) {
+                        alert('Cannot delete room with patients assigned!');
+                        return;
+                    }
+                    
+                    hospitalData.rooms = hospitalData.rooms.filter(room => room.id != id);
+                    break;
+                    
+                case 'patient':
+                    // Free up the room if assigned
+                    const patient = hospitalData.patients.find(p => p.id == id);
+                    if (patient && patient.room_id) {
+                        const roomIndex = hospitalData.rooms.findIndex(room => room.id == patient.room_id);
+                        if (roomIndex !== -1) {
+                            hospitalData.rooms[roomIndex].status = 'available';
+                        }
+                    }
+                    
+                    hospitalData.patients = hospitalData.patients.filter(patient => patient.id != id);
+                    break;
+                    
+                case 'staff':
+                    // Prevent deleting current user
+                    const currentUser = JSON.parse(localStorage.getItem('current_user'));
+                    if (currentUser && currentUser.id == id) {
+                        alert('Cannot delete your own account!');
+                        return;
+                    }
+                    
+                    hospitalData.staff = hospitalData.staff.filter(staff => staff.id != id);
+                    break;
+            }
+            
+            localStorage.setItem('hospital_data', JSON.stringify(hospitalData));
+            
+            // Refresh the appropriate section
+            switch(type) {
+                case 'room':
+                    loadRooms();
+                    break;
+                case 'patient':
+                    loadPatients();
+                    break;
+                case 'staff':
+                    loadStaff();
+                    break;
+            }
+            
+            updateOverviewStats();
+        }
+
+        function generateReport() {
+            const hospitalData = JSON.parse(localStorage.getItem('hospital_data'));
+            const reportType = document.getElementById('report-type').value;
+            const reportPeriod = document.getElementById('report-period').value;
+            
+            const ctx = document.getElementById('report-chart').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (window.reportChart) {
+                window.reportChart.destroy();
+            }
+            
+            let chartData;
+            
+            switch(reportType) {
+                case 'occupancy':
+                    const roomTypes = ['general', 'icu', 'isolation'];
+                    const roomCounts = roomTypes.map(type => 
+                        hospitalData.rooms.filter(room => room.type === type).length
+                    );
+                    const occupiedCounts = roomTypes.map(type => 
+                        hospitalData.rooms.filter(room => 
+                            room.type === type && room.status === 'occupied'
+                        ).length
+                    );
+                    
+                    chartData = {
+                        type: 'bar',
+                        data: {
+                            labels: roomTypes.map(type => type.charAt(0).toUpperCase() + type.slice(1)),
+                            datasets: [
+                                {
+                                    label: 'Total Rooms',
+                                    data: roomCounts,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Occupied Rooms',
+                                    data: occupiedCounts,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Number of Rooms'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Room Type'
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    break;
+                    
+                case 'admissions':
+                    // Simplified - in a real app you'd have admission dates
+                    const severities = ['low', 'medium', 'high', 'critical'];
+                    const severityCounts = severities.map(severity => 
+                        hospitalData.patients.filter(patient => patient.severity === severity).length
+                    );
+                    
+                    chartData = {
+                        type: 'pie',
+                        data: {
+                            labels: severities.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                            datasets: [{
+                                data: severityCounts,
+                                backgroundColor: [
+                                    'rgba(75, 192, 192, 0.5)',
+                                    'rgba(255, 206, 86, 0.5)',
+                                    'rgba(255, 159, 64, 0.5)',
+                                    'rgba(255, 99, 132, 0.5)'
+                                ],
+                                borderColor: [
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Patient Severity Distribution'
+                                }
+                            }
+                        }
+                    };
+                    break;
+                    
+                case 'staff':
+                    const roles = ['doctor', 'nurse', 'admin'];
+                    const roleCounts = roles.map(role => 
+                        hospitalData.staff.filter(staff => staff.role === role).length
+                    );
+                    
+                    chartData = {
+                        type: 'doughnut',
+                        data: {
+                            labels: roles.map(r => r.charAt(0).toUpperCase() + r.slice(1)),
+                            datasets: [{
+                                data: roleCounts,
+                                backgroundColor: [
+                                    'rgba(54, 162, 235, 0.5)',
+                                    'rgba(255, 99, 132, 0.5)',
+                                    'rgba(75, 192, 192, 0.5)'
+                                ],
+                                borderColor: [
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(75, 192, 192, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Staff Distribution'
+                                }
+                            }
+                        }
+                    };
+                    break;
+            }
+            
+            window.reportChart = new Chart(ctx, chartData);
+        }
+
+        function initCharts() {
+            // Room Occupancy Chart
+            const roomCtx = document.getElementById('room-occupancy-chart').getContext('2d');
+            window.roomChart = new Chart(roomCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['General', 'ICU', 'Isolation'],
+                    datasets: [{
+                        label: 'Available',
+                        data: [3, 1, 2],
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Occupied',
+                        data: [1, 1, 0],
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Severity Chart
+            const severityCtx = document.getElementById('severity-chart').getContext('2d');
+            window.severityChart = new Chart(severityCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Low', 'Medium', 'High', 'Critical'],
+                    datasets: [{
+                        data: [5, 3, 2, 1],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(255, 159, 64, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        function getSeverityBadgeClass(severity) {
+            switch(severity) {
+                case 'low': return 'bg-success';
+                case 'medium': return 'bg-primary';
+                case 'high': return 'bg-warning';
+                case 'critical': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+    </script>
+
+
+
+</body>
+</html>

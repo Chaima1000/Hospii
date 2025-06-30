@@ -1,0 +1,469 @@
+/* style.css - Tailwind version */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom components */
+.btn {
+    @apply px-4 py-2 rounded font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-secondary {
+    @apply bg-gray-600 text-white hover:bg-gray-700;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+.btn-warning {
+    @apply bg-yellow-600 text-white hover:bg-yellow-700;
+}
+
+.btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700;
+}
+
+/* Dashboard layout */
+.dashboard-container {
+    @apply flex h-screen bg-gray-50;
+}
+
+.screen {
+    @apply hidden w-full;
+}
+
+.screen.active {
+    @apply block;
+}
+
+/* Login Screen */
+.login-container {
+    @apply max-w-md mx-auto my-24 p-8 bg-white rounded-lg shadow-lg;
+}
+
+.hospital-logo {
+    @apply text-center mb-8;
+}
+
+.hospital-logo i {
+    @apply text-6xl text-blue-600 mb-4;
+}
+
+.hospital-logo h1 {
+    @apply text-gray-800 font-medium;
+}
+
+.form-group {
+    @apply mb-5;
+}
+
+.form-group label {
+    @apply block mb-2 font-medium text-gray-600;
+}
+
+.form-group input {
+    @apply w-full p-3 border border-gray-300 rounded text-base transition-colors;
+}
+
+.form-group input:focus {
+    @apply border-blue-600 outline-none;
+}
+
+/* Dashboard */
+.dashboard-header {
+    @apply flex justify-between items-center px-8 py-4 bg-white shadow-sm h-16 fixed top-0 left-0 right-0 z-50;
+}
+
+.header-left {
+    @apply flex items-center;
+}
+
+.menu-toggle {
+    @apply text-xl mr-5 cursor-pointer text-gray-600;
+}
+
+.header-right {
+    @apply flex items-center;
+}
+
+#user-greeting {
+    @apply mr-5 font-medium;
+}
+
+/* Sidebar */
+.sidebar {
+    @apply w-64 bg-gray-800 text-white fixed top-16 left-0 bottom-0 transition-all duration-300 z-40 overflow-y-auto;
+}
+
+.sidebar.collapsed {
+    @apply w-20;
+}
+
+.nav-menu {
+    @apply list-none py-5;
+}
+
+.nav-item {
+    @apply px-5 py-3 cursor-pointer transition-all duration-300 flex items-center hover:bg-white hover:bg-opacity-10;
+}
+
+.nav-item i {
+    @apply mr-4 text-lg;
+}
+
+.sidebar.collapsed .nav-item span {
+    @apply hidden;
+}
+
+.nav-item.active {
+    @apply bg-blue-600;
+}
+
+/* Main Content */
+.dashboard-content {
+    @apply ml-64 mt-16 p-8 transition-all duration-300;
+}
+
+.sidebar.collapsed + .dashboard-content {
+    @apply ml-20;
+}
+
+.content-section {
+    @apply hidden;
+}
+
+.content-section.active {
+    @apply block;
+}
+
+/* Stats Cards */
+.stats-cards {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8;
+}
+
+.stat-card {
+    @apply bg-white rounded-lg p-5 shadow-sm flex items-center;
+}
+
+.stat-icon {
+    @apply w-14 h-14 rounded-full flex items-center justify-center mr-5 text-2xl text-white;
+}
+
+.stat-icon.bg-primary {
+    @apply bg-blue-600;
+}
+
+.stat-icon.bg-success {
+    @apply bg-green-600;
+}
+
+.stat-icon.bg-warning {
+    @apply bg-yellow-600;
+}
+
+.stat-icon.bg-danger {
+    @apply bg-red-600;
+}
+
+.stat-info h3 {
+    @apply text-2xl mb-1 text-gray-800;
+}
+
+.stat-info p {
+    @apply text-gray-500 text-sm;
+}
+
+/* Charts */
+.charts-container {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8;
+}
+
+.chart-card {
+    @apply bg-white rounded-lg p-5 shadow-sm;
+}
+
+.chart-card h3 {
+    @apply mb-5 text-gray-800 font-medium;
+}
+
+/* Recent Activity */
+.recent-activity {
+    @apply bg-white rounded-lg p-5 shadow-sm;
+}
+
+.recent-activity h3 {
+    @apply mb-5 text-gray-800 font-medium;
+}
+
+.activity-list {
+    @apply max-h-[300px] overflow-y-auto;
+}
+
+.activity-item {
+    @apply py-3 border-b border-gray-200 flex last:border-b-0;
+}
+
+.activity-icon {
+    @apply w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center mr-4 text-blue-600;
+}
+
+.activity-content {
+    @apply flex-1;
+}
+
+.activity-title {
+    @apply font-medium mb-1;
+}
+
+.activity-time {
+    @apply text-xs text-gray-500;
+}
+
+/* Tables */
+.section-header {
+    @apply flex justify-between items-center mb-5;
+}
+
+.section-header h2 {
+    @apply text-gray-800 font-medium;
+}
+
+.filters {
+    @apply flex gap-3 mb-5;
+}
+
+.form-control {
+    @apply p-2 border border-gray-300 rounded text-sm;
+}
+
+.table-responsive {
+    @apply overflow-x-auto bg-white rounded-lg shadow-sm;
+}
+
+.data-table {
+    @apply w-full border-collapse;
+}
+
+.data-table th, .data-table td {
+    @apply px-4 py-3 text-left border-b border-gray-200;
+}
+
+.data-table th {
+    @apply bg-gray-50 font-medium text-gray-600;
+}
+
+.data-table tr:hover {
+    @apply bg-gray-50;
+}
+
+.data-table .action-btn {
+    @apply px-3 py-1 mr-2 text-xs border-none rounded cursor-pointer;
+}
+
+/* Modals */
+.modal {
+    @apply hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[1000] justify-center items-center;
+}
+
+.modal.active {
+    @apply flex;
+}
+
+.modal-content {
+    @apply bg-white rounded-lg w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto p-8 relative;
+}
+
+.modal-content.wide {
+    @apply max-w-4xl;
+}
+
+.modal-content.small {
+    @apply max-w-md;
+}
+
+.close-btn {
+    @apply absolute top-4 right-4 text-2xl cursor-pointer text-gray-500;
+}
+
+.modal h2 {
+    @apply mb-5 text-gray-800 font-medium;
+}
+
+.form-row {
+    @apply flex gap-4 mb-4;
+}
+
+.form-row .form-group {
+    @apply flex-1;
+}
+
+.form-actions {
+    @apply flex justify-end gap-3 mt-5;
+}
+
+.form-check {
+    @apply flex items-center mb-3;
+}
+
+.form-check-input {
+    @apply mr-3;
+}
+
+/* Patient Details Modal */
+.patient-details-container {
+    @apply flex gap-8;
+}
+
+.patient-basic-info, .patient-medical-info {
+    @apply flex-1;
+}
+
+.info-item {
+    @apply mb-3;
+}
+
+.info-label {
+    @apply font-medium text-gray-600 inline-block w-[100px];
+}
+
+.info-value {
+    @apply text-gray-800;
+}
+
+.medical-section {
+    @apply mb-8;
+}
+
+.medical-section h3 {
+    @apply mb-4 text-gray-800 font-medium;
+}
+
+/* Tabs */
+.settings-tabs {
+    @apply bg-white rounded-lg shadow-sm;
+}
+
+.tab-buttons {
+    @apply flex border-b border-gray-200;
+}
+
+.tab-btn {
+    @apply px-5 py-3 bg-transparent border-none cursor-pointer text-sm text-gray-600 relative;
+}
+
+.tab-btn.active {
+    @apply text-blue-600 font-medium;
+}
+
+.tab-btn.active::after {
+    content: '';
+    @apply absolute bottom-[-1px] left-0 right-0 h-0.5 bg-blue-600;
+}
+
+.tab-content {
+    @apply p-5;
+}
+
+.tab-pane {
+    @apply hidden;
+}
+
+.tab-pane.active {
+    @apply block;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sidebar {
+        @apply w-20;
+    }
+    
+    .sidebar .nav-item span {
+        @apply hidden;
+    }
+    
+    .dashboard-content {
+        @apply ml-20;
+    }
+    
+    .patient-details-container {
+        @apply flex-col;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-cards {
+        @apply grid-cols-1;
+    }
+    
+    .charts-container {
+        @apply grid-cols-1;
+    }
+    
+    .form-row {
+        @apply flex-col gap-0;
+    }
+    
+    .filters {
+        @apply flex-col;
+    }
+}
+
+/* Utility Classes */
+.admin-only, .doctor-nurse-only {
+    @apply hidden;
+}
+
+.user-admin .admin-only {
+    @apply block;
+}
+
+.user-doctor .doctor-nurse-only, 
+.user-nurse .doctor-nurse-only {
+    @apply block;
+}
+
+.bg-primary {
+    @apply bg-blue-600;
+}
+
+.bg-success {
+    @apply bg-green-600;
+}
+
+.bg-warning {
+    @apply bg-yellow-600;
+}
+
+.bg-danger {
+    @apply bg-red-600;
+}
+
+.text-primary {
+    @apply text-blue-600;
+}
+
+.text-success {
+    @apply text-green-600;
+}
+
+.text-warning {
+    @apply text-yellow-600;
+}
+
+.text-danger {
+    @apply text-red-600;
+}
+
+.mt-20 {
+    @apply mt-5;
+}
+
+.mb-20 {
+    @apply mb-5;
+}
